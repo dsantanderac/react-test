@@ -12,18 +12,20 @@ function classNames(...classes) {
   }
 
 export default function Tabs() {
-  const storedValue = JSON.parse(localStorage.getItem('framework')) ? JSON.parse(localStorage.getItem('framework')) : 'angular' ;
-  const storedFaves = localStorage.getItem('favorites') ? JSON.parse(localStorage.getItem('favorites')) : [] ;
+  // const storedValueJSON = localStorage.getItem('framework');
+  // const storedValue = storedValueJSON ? JSON.parse(storedValueJSON) : 'angular' ;
+  // const storedFavesJSON = localStorage.getItem('favorites')
+  // const storedFaves = storedFavesJSON ? JSON.parse(storedFavesJSON) : [] ;
 
-  const [selectedValue, setSelectedValue] = useState(storedValue);
-  const [posts, setPosts] = useState([]);
+  const [selectedValue, setSelectedValue] = useState('angular');
+  const [favorites, setFavorites] : any[] = useState([]);
+  const [posts, setPosts]: any[] = useState([]);
   const [selectedPage, setPage] = useState(0);
   const handleItemSelected = (value) => {
     setSelectedValue(value);
     fetchNewsData(value);
   };
-
-  const observer = useRef();
+  const observer = useRef<IntersectionObserver | null>(null);
 
   const lastPostElementRef = useCallback(node => {
     if (observer.current) observer.current.disconnect();
@@ -37,6 +39,15 @@ export default function Tabs() {
     if (node) observer.current.observe(node);
   }, []);
 
+  useEffect(() => {
+    const storedValueJSON = localStorage.getItem('framework');
+    const storedValue = storedValueJSON ? JSON.parse(storedValueJSON) : 'angular';
+    setSelectedValue(storedValue);
+
+    const storedFavesJSON = localStorage.getItem('favorites');
+    const storedFaves = storedFavesJSON ? JSON.parse(storedFavesJSON) : [];
+    setFavorites(storedFaves);
+  }, []);
   useEffect(() => {
     localStorage.setItem('framework', JSON.stringify(selectedValue));
   }, [selectedValue])
@@ -111,7 +122,7 @@ export default function Tabs() {
         </Tab.Panel>
 
         <Tab.Panel>
-        <PostsList posts={storedFaves} />
+        <PostsList posts={favorites} />
         </Tab.Panel>
       </Tab.Panels>
     </Tab.Group>

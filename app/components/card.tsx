@@ -1,11 +1,18 @@
+"use client";
+
 import React, { useState, useEffect, useRef, useCallback, forwardRef } from 'react';
 
-const PostsList = forwardRef(({ posts }, ref) => {
-    const storedFaves = localStorage.getItem('favorites') ? JSON.parse(localStorage.getItem('favorites')) : [] ;
-    const [favorites, setFavorites] = useState(storedFaves);
+interface PostsListProps {
+  posts: any[]; // Reemplaza 'any' con un tipo más específico si es posible
+}
 
-    const toggleFavorite = (post) => {
-      setFavorites(prevFavorites => {
+const PostsList = forwardRef<HTMLDivElement, PostsListProps>(({ posts }, ref) => {
+    // const storedFavesJSON = localStorage.getItem('favorites');
+    // const storedFaves = storedFavesJSON ? JSON.parse(storedFavesJSON) : [];
+    const [favorites, setFavorites] : any[] = useState([]);
+
+    const toggleFavorite = (post: any) => {
+      setFavorites((prevFavorites: any[]) => {
         const isFavorite = prevFavorites.some(favoritePost => favoritePost.objectID === post.objectID);
     
         if (isFavorite) {
@@ -19,6 +26,12 @@ const PostsList = forwardRef(({ posts }, ref) => {
       useEffect(() => {
         localStorage.setItem('favorites', JSON.stringify(favorites));
       }, [favorites]);
+
+      useEffect(() => {
+        const storedFavesJSON = localStorage.getItem('favorites');
+        const storedFaves = storedFavesJSON ? JSON.parse(storedFavesJSON) : [];
+        setFavorites(storedFaves);
+      }, []);
     return (
       <div className="grid grid-cols-2 gap-4">
         {posts.map((post, index) => (
@@ -64,5 +77,5 @@ const PostsList = forwardRef(({ posts }, ref) => {
     const formattedDate = new Date(date);
     return formattedDate.toLocaleString() + ' by ';
   }
-
+  PostsList.displayName = 'PostsList';
   export default PostsList;
